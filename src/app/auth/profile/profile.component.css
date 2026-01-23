@@ -1,0 +1,96 @@
+/* -- profile.component.css -- */
+
+/* Contenedor principal de la tarjeta, ajusta el espaciado si es necesario */
+.container.mt-5 {
+  padding-top: 40px; /* Un poco más de espacio superior */
+  padding-bottom: 40px; /* Y espacio inferior */
+}
+
+/* Estilos de la tarjeta */
+.card {
+  border: none; /* Quitamos el borde por defecto de Bootstrap */
+  border-radius: 15px; /* Bordes más suaves y redondeados */
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15); /* Una sombra más pronunciada para un efecto de elevación */
+  overflow: hidden; /* Asegura que los bordes redondeados se apliquen al contenido interno */
+  background-color: #ffffff; /* Fondo blanco para la tarjeta */
+  transition: transform 0.3s ease, box-shadow 0.3s ease; /* Transiciones suaves para interactividad */
+}
+
+.card:hover {
+  transform: translateY(-5px); /* Un ligero levantamiento al pasar el ratón */
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2); /* Sombra más intensa al pasar el ratón */
+}
+
+/* Encabezado de la tarjeta */
+.card-header {
+  background-color: #4a5a6a; /* Un color oscuro azulado/grisáceo para el header */
+  color: #ffffff; /* Texto blanco para el header */
+  padding: 25px 30px; /* Espaciado interno generoso */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2); /* Separador sutil */
+  border-top-left-radius: 15px; /* Coincide con el radio de la tarjeta */
+  border-top-right-radius: 15px;
+}
+
+.card-header h3 {
+  margin-bottom: 0; /* Remueve el margen inferior por defecto del h3 */
+  font-size: 2.2rem; /* Tamaño de fuente para el título del perfil */
+  font-weight: 700; /* Más negrita para el título */
+  letter-spacing: 0.5px; /* Un poco de espaciado entre letras */
+}
+
+/* Cuerpo de la tarjeta */
+.card-body {
+  padding: 30px 30px; /* Espaciado interno generoso */
+  color: #343a40; /* Color de texto oscuro para buena legibilidad */
+}
+
+.card-body p {
+  font-size: 1.15rem; /* Tamaño de fuente para la información del perfil */
+  margin-bottom: 15px; /* Espacio entre las líneas de información */
+  line-height: 1.6; /* Altura de línea para mejorar la legibilidad */
+}
+
+.card-body p strong {
+  color: #212529; /* Un tono un poco más oscuro para las etiquetas */
+  font-weight: 700; /* Asegura que las etiquetas estén bien resaltadas */
+  margin-right: 8px; /* Espacio entre la etiqueta y el valor */
+}
+
+/* Botón de cerrar sesión */
+.btn-danger {
+  padding: 14px 25px; /* Aumenta el padding del botón para que sea más clicable */
+  font-size: 1.1rem; /* Tamaño de fuente del botón */
+  font-weight: 600; /* Texto del botón más negrita */
+  border-radius: 8px; /* Bordes ligeramente redondeados para el botón */
+  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease; /* Transiciones suaves */
+}
+
+.btn-danger:hover {
+  background-color: #c82333; /* Un rojo más oscuro al pasar el ratón */
+  border-color: #bd2130; /* Borde más oscuro al pasar el ratón */
+  transform: translateY(-2px); /* Efecto de levantamiento */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Sombra al pasar el ratón */
+}
+
+/* Estilo para el contenedor de la información, si deseas separarlo */
+.card-body .mb-3:last-of-type {
+  margin-bottom: 30px; /* Más espacio antes del botón */
+}
+
+/* Si tu componente de perfil tiene un mensaje para cuando no hay usuario */
+.no-user-message {
+  text-align: center;
+  margin-top: 50px;
+  font-size: 1.2rem;
+  color: #6c757d;
+}
+
+.no-user-message a {
+  color: #007bff;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.no-user-message a:hover {
+  text-decoration: underline;
+}

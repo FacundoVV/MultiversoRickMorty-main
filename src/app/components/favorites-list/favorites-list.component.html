@@ -1,0 +1,46 @@
+<!-- src/app/components/favorites-list/favorites-list.component.html -->
+<div class="favorites-container">
+  <h2>Mis Personajes Favoritos</h2>
+  
+  <div *ngIf="favoritesService.getFavorites() | async as favorites">
+    <div *ngIf="favorites.length === 0" class="no-favorites">
+      No tienes personajes favoritos todavía. 
+      <a routerLink="/">¡Explora los personajes!</a>
+    </div>
+    
+    <div class="favorites-grid">
+      <div *ngFor="let favorite of favorites" class="favorite-card">
+        <img [src]="favorite.image" [alt]="favorite.name">
+        <h3>{{ favorite.name }}</h3>
+        <p>Estado: {{ favorite.status }}</p>
+        <p>Especie: {{ favorite.species }}</p>
+        
+        <div *ngIf="editingNotesId !== favorite.id" class="notes-section">
+          <p *ngIf="favorite.notes">{{ favorite.notes }}</p>
+          <button (click)="startEditing(favorite)" class="edit-btn">
+            {{ favorite.notes ? 'Editar' : 'Añadir' }} notas
+          </button>
+        </div>
+        
+        <div *ngIf="editingNotesId === favorite.id" class="notes-edit">
+  <textarea [(ngModel)]="updatedNotes"></textarea>
+  <div class="notes-actions">
+    <button (click)="saveNotes(favorite)" class="btn-save">
+      <i class="fas fa-save"></i> Guardar
+    </button>
+    <button (click)="cancelEditing()" class="btn-cancel">
+      <i class="fas fa-times"></i> Cancelar
+    </button>
+  </div>
+</div>
+        
+        <button 
+          (click)="favoritesService.removeFavorite(favorite.id)"
+          class="remove-btn"
+        >
+          Eliminar de favoritos
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

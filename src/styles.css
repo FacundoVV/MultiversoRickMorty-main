@@ -1,0 +1,66 @@
+/* ============== FUENTES Y VARIABLES ============== */
+@import url('https://fonts.cdnfonts.com/css/get-schwifty');
+
+:root {
+  /* Paleta de colores */
+  --portal-blue: #00c0ff;
+  --portal-green: #42b983;
+  --portal-purple: #9b59b6;
+  --dark-space: #0f172a;
+  --neon-pink: #ff00aa;
+  --error-red: #ff3860;
+  --wubba-lubba: #f39c12;
+  
+  /* Espaciados */
+  --space-xs: 0.5rem;
+  --space-sm: 1rem;
+  --space-md: 1.5rem;
+  --space-lg: 2rem;
+  --space-xl: 3rem;
+  --space-xxl: 3.5rem;
+  
+  /* Bordes */
+  --radius-sm: 8px;
+  --radius-md: 15px;
+  --radius-lg: 50px;
+}
+
+/* ============== RESET Y ESTILOS BASE ============== */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+  color: #fff;
+  background-color: var(--dark-space);
+}
+
+
+/* ============== TIPOGRAFÍA ============== */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Get Schwifty', cursive;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: var(--space-md);
+  text-shadow: 0 0 10px rgba(0, 192, 255, 0.7);
+  line-height: 1.2;
+}
+
+/* ============== ANIMACIONES ============== */
+@keyframes glow {
+  from {
+    text-shadow: 0 0 10px rgba(0, 192, 255, 0.7);
+  }
+  to {
+    text-shadow: 0 0 15px rgba(0, 192, 255, 0.9);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

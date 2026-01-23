@@ -1,0 +1,203 @@
+<!-- FILTROS - AÑADE ESTO AL PRINCIPIO -->
+<div class="filters-container">
+  <!-- Contador de personajes -->
+  <div class="characters-info">
+    <div class="characters-count">
+      <span *ngIf="!isLoading && allCharacters.length > 0">
+        <span *ngIf="showingLimitedView && !hasActiveFilters()" class="limited-badge">
+          <i class="fas fa-bolt"></i> Vista rápida
+        </span>
+        <span *ngIf="!showingLimitedView || hasActiveFilters()" class="full-badge">
+          <i class="fas fa-list"></i> Vista completa
+        </span>
+        <strong>{{ getDisplayedCount() }}</strong> personajes mostrados
+        <span *ngIf="hasLoadedAll" class="loaded-all">
+          (todos cargados)
+        </span>
+      </span>
+      <span *ngIf="isLoading">
+        Cargando personajes...
+      </span>
+    </div>
+    <button (click)="showAllCharacters()" 
+            class="show-all-btn"
+            *ngIf="showingLimitedView && !hasActiveFilters()"
+            title="Ver todos los personajes">
+      <i class="fas fa-eye"></i> Ver todos
+    </button>
+  </div>
+
+  <!-- Barra de búsqueda -->
+  <div class="search-container">
+    <input
+      type="text"
+      placeholder="Buscar personajes..."
+      [(ngModel)]="searchTerm"
+      (keyup.enter)="searchCharacters(searchTerm)"
+      #searchInput
+    >
+    <button (click)="searchCharacters(searchTerm)">
+      <i class="fas fa-search"></i> Buscar
+    </button>
+  </div>
+
+  <!-- Filtros -->
+  <div class="filter-grid">
+    <!-- Filtro por Estado -->
+    <div class="filter-group">
+      <label for="statusFilter">Estado:</label>
+      <select 
+        id="statusFilter"
+        [(ngModel)]="statusFilter" 
+        (change)="applyFilters()"
+        class="filter-select"
+      >
+        <option value="todos">Todos los estados</option>
+        <option *ngFor="let status of availableStatuses" [value]="status">
+          {{ status }}
+        </option>
+      </select>
+    </div>
+
+    <!-- Filtro por Especie -->
+    <div class="filter-group">
+      <label for="speciesFilter">Especie:</label>
+      <select 
+        id="speciesFilter"
+        [(ngModel)]="speciesFilter" 
+        (change)="applyFilters()"
+        class="filter-select"
+      >
+        <option value="todas">Todas las especies</option>
+        <option *ngFor="let species of availableSpecies" [value]="species">
+          {{ species }}
+        </option>
+      </select>
+    </div>
+
+    <!-- Filtro por Ubicación -->
+    <div class="filter-group">
+      <label for="locationFilter">Ubicación:</label>
+      <select 
+        id="locationFilter"
+        [(ngModel)]="locationFilter" 
+        (change)="applyFilters()"
+        class="filter-select"
+      >
+        <option value="todas">Todas las ubicaciones</option>
+        <option *ngFor="let location of availableLocations" [value]="location">
+          {{ location }}
+        </option>
+      </select>
+    </div>
+
+    <!-- Botón limpiar filtros -->
+    <div class="filter-group">
+      <button (click)="clearFilters()" class="clear-filters-btn">
+        <i class="fas fa-times"></i> Limpiar filtros
+      </button>
+    </div>
+  </div>
+
+  <!-- Información de carga -->
+  <div *ngIf="isLoadingAll()" class="loading-all">
+    <i class="fas fa-spinner fa-spin"></i> Cargando todos los personajes...
+  </div>
+
+  <!-- Información de estado -->
+  <div class="view-info" *ngIf="!isLoading && allCharacters.length > 0">
+    <p *ngIf="showingLimitedView && !hasActiveFilters()" class="limited-message">
+      <i class="fas fa-info-circle"></i> Mostrando los primeros 100 personajes para mejor rendimiento.
+      Al buscar o filtrar, se cargarán todos los personajes disponibles.
+    </p>
+    <p *ngIf="!showingLimitedView && hasLoadedAll" class="full-message">
+      <i class="fas fa-check-circle"></i> Todos los personajes cargados. Filtra o busca libremente.
+    </p>
+  </div>
+</div>
+
+<!-- Estado de carga inicial -->
+<div *ngIf="isLoading" class="loading">
+  <div class="spinner"></div>
+  <p>Cargando personajes...</p>
+</div>
+
+<!-- Mensaje de error -->
+<div *ngIf="errorMessage" class="error-message">
+  <p>{{ errorMessage }}</p>
+  <button (click)="loadInitialCharacters()">Reintentar</button>
+</div>
+
+<!-- Tabla de personajes -->
+<div *ngIf="!isLoading && getDisplayedCount() > 0">
+  <table class="character-table">
+    <thead>
+      <tr>
+        <th>Imagen</th>
+        <th (click)="sortTable('name')">Nombre</th>
+        <th (click)="sortTable('status')">Estado</th>
+        <th (click)="sortTable('species')">Especie</th>
+        <th>Ubicación</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let character of displayedCharacters">
+        <td>
+          <img 
+            [src]="character.image" 
+            [alt]="character.name"
+            (load)="handleImageLoad(character)"
+            (error)="handleImageError($event, character)"
+            [class.loaded]="character.imageLoaded"
+            class="character-image"
+          >
+        </td>
+        <td>{{ character.name }}</td>
+        <td>{{ character.status }}</td>
+        <td>{{ character.species }}</td>
+        <td (mouseenter)="loadLocation(character)">
+          {{ character.locationName }}
+        </td>
+        <td class="actions">
+          <button 
+            (click)="toggleFavorite(character)"
+            [class.favorite]="character.isFavorite"
+            class="favorite-btn"
+            title="{{ character.isFavorite ? 'Quitar de favoritos' : 'Añadir a favoritos' }}"
+          >
+            {{ character.isFavorite ? '❤️' : '♡' }}
+          </button>
+          
+          <div *ngIf="character.isFavorite" class="notes-section">
+            <div *ngIf="showNotesInputId !== character.id" class="notes-container">
+              <p *ngIf="character.notes">{{ character.notes }}</p>
+              <button (click)="startEditingNotes(character)" class="btn-small">
+                {{ character.notes ? '✏️ Editar' : '➕ Añadir' }} notas
+              </button>
+            </div>
+            
+            <div *ngIf="showNotesInputId === character.id" class="notes-input">
+              <textarea [(ngModel)]="notesText" placeholder="Tus notas sobre este personaje..."></textarea>
+              <div class="notes-actions">
+                <button (click)="saveNotes(character)">💾 Guardar</button>
+                <button (click)="cancelEditing()">✖ Cancelar</button>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Estado sin resultados -->
+<div *ngIf="!isLoading && getDisplayedCount() === 0 && !errorMessage" class="no-results">
+  <h3>¡No se encontraron personajes!</h3>
+  <p *ngIf="hasActiveFilters()">
+    No hay personajes que coincidan con tus filtros o búsqueda.
+  </p>
+  <p *ngIf="!hasActiveFilters()">
+    No hay personajes cargados. Intenta recargar la página.
+  </p>
+</div>

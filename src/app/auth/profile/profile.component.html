@@ -1,0 +1,20 @@
+<div class="container mt-5" *ngIf="authService.currentUserValue">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header">
+          <h3 class="text-center">Perfil de usuario</h3>
+        </div>
+        <div class="card-body">
+          <div class="mb-3">
+            <p><strong>Email:</strong> {{ authService.currentUserValue.email }}</p>
+            <!-- Ahora podemos mostrar el username directamente de currentUserValue -->
+            <p *ngIf="authService.currentUserValue.username"><strong>Nombre de usuario:</strong> {{ authService.currentUserValue.username }}</p>
+            <p><strong>UID:</strong> {{ authService.currentUserValue.uid }}</p>
+          </div>
+          <button class="btn btn-danger w-100" (click)="authService.logout()">Cerrar sesión</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

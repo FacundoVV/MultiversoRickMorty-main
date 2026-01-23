@@ -1,0 +1,168 @@
+/* --- src/app/auth/login/login.component.css --- */
+
+/* Contenedor principal centrado */
+.login-wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 15px; /* Menos padding externo */
+}
+
+/* === CAMBIO 1: LA TARJETA MÁS CHICA === */
+.login-card {
+  width: 100%;
+  /* AQUÍ: Reducimos el ancho máximo a 340px (antes era más grande) */
+  max-width: 340px;
+  /* AQUÍ: Menos relleno interno para que sea más compacta */
+  padding: 25px 30px;
+  
+  /* Efecto Cristal (Glassmorphism) */
+  background: rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+}
+
+/* === CAMBIO 2: EL ICONO DEL CANDADO GIGANTE === */
+.logo-container {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.logo-icon {
+  /* AQUÍ: Definimos un tamaño fijo y pequeño para el contenedor del icono */
+  width: 45px;
+  height: 45px;
+  margin: 0 auto 10px; /* Centrado */
+  color: white; /* Color blanco puro para el icono */
+  /* Opcional: un fondo circular suave para que resalte */
+  background: rgba(255,255,255,0.1);
+  border-radius: 50%;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Aseguramos que el SVG dentro no se salga de control */
+.logo-icon svg {
+  width: 100%;
+  height: 100%;
+  stroke-width: 1.5; /* Líneas más finas y elegantes */
+}
+
+/* Título y Subtítulo más pequeños */
+.login-title {
+  /* AQUÍ: Reducimos el tamaño de la letra */
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: white;
+  margin: 0 0 5px;
+  /* Quitamos el efecto neón exagerado si lo tenía */
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.login-subtitle {
+  font-size: 0.85rem;
+  color: #aaa;
+  margin-bottom: 20px;
+}
+
+/* === CAMBIO 3: LOS ICONOS PEQUEÑOS DE LOS INPUTS (Sobre y Candado chico) === */
+.input-group {
+  margin-bottom: 15px;
+}
+
+.input-label {
+  display: flex;
+  align-items: center;
+  font-size: 0.85rem;
+  color: #ccc;
+  margin-bottom: 6px;
+}
+
+.input-icon {
+  /* AQUÍ: Forzamos un tamaño pequeño para los iconos al lado del texto */
+  width: 16px;
+  height: 16px;
+  margin-right: 8px;
+  opacity: 0.8; /* Un poco más apagados para que no distraigan */
+}
+
+/* Campos de texto (Inputs) más compactos */
+.input-field {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 10px 14px; /* Menos padding interno */
+  font-size: 0.9rem;
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: #818cf8; /* Color azul suave al hacer clic */
+  background: rgba(0, 0, 0, 0.5);
+}
+
+/* Botón de Iniciar Sesión */
+.submit-btn {
+  width: 100%;
+  /* Degradado azul/morado espacial */
+  background: linear-gradient(to right, #4f46e5, #7c3aed);
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 15px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.submit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(124, 58, 237, 0.4);
+}
+
+/* --- PARTE 2: EL CARTEL DE ERROR/ÉXITO (Iconos MEDIANOS) --- */
+/* Corrección: Usamos los nombres exactos de tu HTML (.error-alert y .alert-icon) */
+
+/* Contenedor del mensaje */
+.status-container, .alert, .error-alert, .success-alert {
+    padding: 15px !important;
+    text-align: center !important;
+    margin-top: 15px !important;
+    max-width: 100% !important;
+    background: rgba(0,0,0,0.2); /* Un fondo suave opcional */
+    border-radius: 10px;
+}
+
+/* El icono de alerta (Check o Cruz) */
+/* Aquí atrapamos a tu 'alert-icon' y 'success-icon' específicamente */
+.error-alert svg, 
+.success-alert svg,
+.alert-icon, 
+.success-icon {
+    width: 50px !important;       /* Tamaño controlado (ni gigante, ni enano) */
+    height: 50px !important;
+    min-width: 50px !important;   /* Para que no se aplaste */
+    margin: 0 auto 10px !important; /* Centrado */
+    display: block !important;
+}
+
+/* Texto del error */
+.error-alert span, .success-alert span {
+    display: block;
+    font-size: 0.9rem;
+    color: #ff6b6b; /* Color rojizo para error */
+}
+.success-alert span {
+    color: #51cf66; /* Color verde para éxito */
+}

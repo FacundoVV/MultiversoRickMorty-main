@@ -1,0 +1,157 @@
+<div class="register-wrapper">
+  <div class="register-container">
+    <div class="register-card">
+      <!-- Header moderno -->
+      <header class="register-header">
+        <div class="logo-container">
+          <div class="logo-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"></path>
+              <circle cx="8.5" cy="7" r="4"></circle>
+              <path d="M20 8v6M23 11h-6"></path>
+            </svg>
+          </div>
+          <h1 class="register-title">Crear Cuenta</h1>
+        </div>
+      </header>
+
+      <!-- Formulario -->
+      <main class="register-content">
+        <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="register-form">
+          <!-- Campo Username -->
+          <div class="input-group">
+            <label for="username" class="input-label">
+              <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+              Nombre de usuario
+            </label>
+            <input 
+              type="text" 
+              id="username" 
+              formControlName="username" 
+              placeholder="ej. matiasarce"
+              class="input-field"
+              [class.invalid]="hasError('username', 'required') || hasError('username', 'minlength')"
+              autocomplete="username"
+            >
+            <div class="error-messages" *ngIf="usernameControl?.touched">
+              <span class="error-text" *ngIf="hasError('username', 'required')">
+                El nombre de usuario es requerido
+              </span>
+              <span class="error-text" *ngIf="hasError('username', 'minlength')">
+                Mínimo 3 caracteres
+              </span>
+            </div>
+          </div>
+
+          <!-- Campo Email -->
+          <div class="input-group">
+            <label for="email" class="input-label">
+              <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+              </svg>
+              Correo electrónico
+            </label>
+            <input 
+              type="email" 
+              id="email" 
+              formControlName="email" 
+              placeholder="ejemplo@correo.com"
+              class="input-field"
+              [class.invalid]="hasError('email', 'required') || hasError('email', 'email')"
+              autocomplete="email"
+            >
+            <div class="error-messages" *ngIf="emailControl?.touched">
+              <span class="error-text" *ngIf="hasError('email', 'required')">
+                El correo electrónico es requerido
+              </span>
+              <span class="error-text" *ngIf="hasError('email', 'email')">
+                Ingresa un correo electrónico válido
+              </span>
+            </div>
+          </div>
+
+          <!-- Campo Contraseña -->
+          <div class="input-group">
+            <label for="password" class="input-label">
+              <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+              </svg>
+              Contraseña
+            </label>
+            <input 
+              type="password" 
+              id="password" 
+              formControlName="password" 
+              placeholder="••••••••"
+              class="input-field"
+              [class.invalid]="hasError('password', 'required') || hasError('password', 'minlength')"
+              autocomplete="new-password"
+            >
+            <div class="error-messages" *ngIf="passwordControl?.touched">
+              <span class="error-text" *ngIf="hasError('password', 'required')">
+                La contraseña es requerida
+              </span>
+              <span class="error-text" *ngIf="hasError('password', 'minlength')">
+                Mínimo 6 caracteres
+              </span>
+            </div>
+          </div>
+
+          <!-- Confirmar Contraseña (opcional, puedes añadirlo) -->
+          <!-- <div class="input-group">
+            <label for="confirmPassword" class="input-label">
+              <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+              </svg>
+              Confirmar contraseña
+            </label>
+            <input 
+              type="password" 
+              id="confirmPassword" 
+              formControlName="confirmPassword" 
+              placeholder="••••••••"
+              class="input-field"
+              autocomplete="new-password"
+            >
+          </div> -->
+
+          <!-- Mensaje de error general -->
+          <div class="error-alert" *ngIf="errorMessage">
+            <svg class="alert-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <span>{{ errorMessage }}</span>
+          </div>
+
+          <!-- Mensaje de éxito -->
+          <div class="success-alert" *ngIf="successMessage">
+            <svg class="success-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 11.08V12a10 10 0 11-5.93-9.14"></path>
+              <path d="M22 4L12 14.01l-3-3"></path>
+            </svg>
+            <span>{{ successMessage }}</span>
+          </div>
+
+          <!-- Botón de submit -->
+          <button 
+            type="submit" 
+            class="submit-btn"
+            [disabled]="registerForm.invalid || isLoading"
+            [class.loading]="isLoading"
+          >
+            <span *ngIf="!isLoading">Crear cuenta</span>
+            <span *ngIf="isLoading" class="loading-spinner"></span>
+          </button>
+        </form>
+
+        <!-- Enlace a login -->
+        <div class="login-link">
+          <p>¿Ya tienes una cuenta? <a routerLink="/login" class="login-text">Inicia sesión</a></p>
+        </div>
+      </main>
+    </div>
+  </div>
+</div>
