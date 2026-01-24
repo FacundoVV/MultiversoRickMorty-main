@@ -652,3 +652,78 @@
   border-radius: var(--radius-sm);
   cursor: pointer;
 }
+/* =========================================
+   TRANSFORMACIÓN A TARJETAS EN MÓVIL
+   ========================================= */
+
+@media (max-width: 768px) {
+  /* 1. Ocultamos los títulos de la tabla (Imagen, Nombre, Estado...) */
+  .character-table thead {
+    display: none;
+  }
+
+  /* 2. Convertimos cada fila (el personaje) en una TARJETA */
+  .character-table tbody tr {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative; /* Para poder mover el corazón */
+    
+    background-color: rgba(15, 23, 42, 0.95);
+    border: 1px solid var(--portal-blue);
+    margin-bottom: 20px;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+  }
+
+  /* 3. Ajustamos las celdas para que se apilen */
+  .character-table td {
+    display: block;
+    width: 100%;
+    text-align: center;
+    padding: 5px 0;
+    border: none; /* Quitamos las líneas de la tabla vieja */
+  }
+
+  /* 4. La Imagen: Más grande y arriba */
+  .character-table td:first-child {
+    margin-bottom: 10px;
+  }
+  .character-image {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 3px solid var(--portal-green);
+  }
+
+  /* 5. El Nombre: Más grande y llamativo */
+  .character-table td:nth-child(2) {
+    font-size: 1.5rem;
+    font-family: 'Get Schwifty', sans-serif; /* Si tienes la fuente */
+    color: var(--portal-green);
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+
+  /* 6. El Corazón (Acciones): FLOTANDO arriba a la derecha */
+  .character-table td.actions {
+    position: absolute; /* Lo sacamos del flujo normal */
+    top: 15px;
+    right: 15px;
+    width: auto; /* Que ocupe solo lo necesario */
+  }
+
+  .favorite-btn {
+    font-size: 2.2rem !important; /* Corazón bien grande */
+    opacity: 1 !important;         /* Siempre visible */
+    color: var(--neon-pink, #ff0080); /* Color rosa por defecto */
+    background: rgba(0,0,0,0.3);      /* Fondo oscurito para que resalte */
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
