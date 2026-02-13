@@ -20,7 +20,6 @@ export class AuthGuard implements CanActivate {
    */
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean | UrlTree> {
     
-    // 1. Nos suscribimos al 'canal de radio' (Observable) del usuario
     return this.authService.currentUser$.pipe(
       // take(1) es vital: toma el primer valor que emita Firebase y cierra la conexión
       take(1),
