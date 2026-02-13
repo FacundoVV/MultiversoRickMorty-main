@@ -1,39 +1,51 @@
 import { Injectable, inject } from '@angular/core';
-// Importamos las herramientas de rutas de Angular
+// Herramientas de navegación y rutas de Angular
 import { CanActivate, Router, ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree } from '@angular/router';
-import { Observable } from 'rxjs';
-import { map, take } from 'rxjs/operators';
-// Importamos nuestro servicio de autenticación para saber el estado del usuario
+import { Observable, of } from 'rxjs';
+import { map, take, tap } from 'rxjs/operators';
+// Servicio de autenticación para consultar el estado del usuario
 import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthGuard implements CanActivate {
-  // Usamos 'inject' para traer las herramientas necesarias sin usar el constructor
+  // Inyectamos las herramientas necesarias
   private authService = inject(AuthService);
   private router = inject(Router);
 
   /**
-   * canActivate es el método que Angular llama automáticamente 
-   * antes de que el usuario cambie de página.
+   * Este método decide si el usuario puede entrar a una página o no.
+   * Se ejecuta ANTES de que la ruta cambie.
    */
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean | UrlTree> {
     
-    // Consultamos el flujo de datos del usuario (el Observable $)
+    // 1. Nos suscribimos al 'canal de radio' (Observable) del usuario
     return this.authService.currentUser$.pipe(
-      // take(1) asegura que solo miremos el estado actual una vez y cerremos la consulta
+      // take(1) es vital: toma el primer valor que emita Firebase y cierra la conexión
       take(1),
-      // map transforma el objeto "usuario" en un resultado que Angular entienda (true/false)
+      // tap nos sirve para ver en la consola qué está pasando sin alterar los datos
+      tap(user => {
+        if (!user) {
+          console.warn('AuthGuard: Acceso denegado. No hay usuario detectado.');
+        } else {
+          console.log('AuthGuard: Acceso concedido para:', user.email);
+        }
+      }),
+      // map transforma el usuario en un permiso (true) o en una orden de mudanza (UrlTree)
       map(user => {
-        // Si el usuario existe (está logueado), devolvemos true para dejarlo pasar
+        // SI EL USUARIO EXISTE:
+        // Angular recibe 'true' y permite que la página cargue.
         if (user) {
           return true;
         }
         
-        // Si no hay usuario, creamos una "redirección" hacia la página de login
-        // Esto impide que el usuario vea contenido privado si no ha iniciado sesión
-        return this.router.createUrlTree(['/login']);
+        // SI NO HAY USUARIO:
+        // Creamos una ruta de redirección al login.
+        // Guardamos 'returnUrl' para que, tras loguearse, el sistema sepa a dónde quería ir el usuario.
+        return this.router.createUrlTree(['/login'], { 
+          queryParams: { returnUrl: state.url } 
+        });
       })
     );
   }
