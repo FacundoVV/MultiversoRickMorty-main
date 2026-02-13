@@ -16,29 +16,28 @@ export class CharacterTableComponent implements OnInit {
   // URLs de la API
   private readonly API_URL = 'https://rickandmortyapi.com/api/character';
 
-  // Estado del componente
-  allCharacters: Character[] = [];               // TODOS los personajes cargados (solo 100 inicialmente)
-  allCharactersFull: Character[] = [];           // TODOS los personajes de la API (cuando se cargan)
-  displayedCharacters: Character[] = [];         // Personajes que se muestran actualmente
-  sortDirection: 'asc' | 'desc' = 'asc';        // Dirección de ordenamiento
-  showNotesInputId: number | null = null;       // ID del personaje al que se le editan notas
-  notesText: string = '';                       // Texto de notas
-  searchTerm: string = '';                      // Texto del buscador
-  isLoading: boolean = false;                   // Estado de carga
-  isLoadingMore: boolean = false;               // Estado de carga adicional
-  errorMessage: string | null = null;           // Errores de API
+allCharacters: Character[] = [];               // Memoria temporal de los primeros 100 personajes
+  allCharactersFull: Character[] = [];           // Memoria completa de los más de 800 personajes (se llena bajo demanda)
+  displayedCharacters: Character[] = [];         // Lo que el usuario ve en la tabla en este segundo
+  sortDirection: 'asc' | 'desc' = 'asc';         // Controla si la tabla se ordena de A-Z o Z-A
+  showNotesInputId: number | null = null;        // Controla qué fila muestra el cuadro de texto para notas
+  notesText: string = '';                        // Texto temporal mientras escribes una nota
+  searchTerm: string = '';                       // Palabra que el usuario escribe en el buscador
+  isLoading: boolean = false;                    // Para mostrar el "Cargando..." principal
+  isLoadingMore: boolean = false;                // Para mostrar un aviso mientras se descargan los 800+ personajes
+  errorMessage: string | null = null;            // Mensaje en caso de que la API falle
 
-  // Variables para controlar qué mostrar
-  defaultLimit: number = 100;                   // Límite por defecto (sin filtros)
-  showingLimitedView: boolean = true;           // Si estamos mostrando vista limitada
-  hasLoadedAll: boolean = false;                // Si ya cargamos TODOS los personajes
+  // --- VARIABLES DE CONTROL DE VISTA ---
+  defaultLimit: number = 100;                    // Límite inicial para no saturar el navegador
+  showingLimitedView: boolean = true;            // Indica si estamos en "modo rápido" (solo 100) o "modo completo"
+  hasLoadedAll: boolean = false;                 // Bandera para no volver a descargar todo si ya lo hicimos una vez
 
-  // Variables para filtros
+  // --- VARIABLES PARA FILTROS (Vinculadas a los select del HTML) ---
   statusFilter: string = 'todos';
   speciesFilter: string = 'todas';
   locationFilter: string = 'todas';
   
-  // Opciones para los filtros
+  // Listas que llenan los desplegables de filtros dinámicamente
   availableStatuses: string[] = [];
   availableSpecies: string[] = [];
   availableLocations: string[] = [];
@@ -46,9 +45,10 @@ export class CharacterTableComponent implements OnInit {
   constructor(
     private http: HttpClient,
     private favoritesService: FavoritesService,
-    private cdRef: ChangeDetectorRef
+    private cdRef: ChangeDetectorRef // Herramienta para forzar a Angular a refrescar la vista
   ) {}
 
+  // Se ejecuta al cargar el componente
   ngOnInit(): void {
     this.loadInitialCharacters();
   }
@@ -339,10 +339,35 @@ export class CharacterTableComponent implements OnInit {
     this.updateCharacterInList(character.id);
   }
 
+ // --- PEGA ESTO NUEVO ---
   private updateCharacterInList(id: number): void {
-    const index = this.displayedCharacters.findIndex(c => c.id === id);
-    if (index !== -1) {
-      this.displayedCharacters[index] = this.enrichCharacterData(this.displayedCharacters[index]);
+    // 1. Buscamos el personaje en cualquiera de las listas para tener el dato base
+    const characterBase = this.displayedCharacters.find(c => c.id === id) || 
+                          this.allCharactersFull.find(c => c.id === id) || 
+                          this.allCharacters.find(c => c.id === id);
+
+    if (characterBase) {
+      // 2. Creamos la versión actualizada (con el corazón pintado o despintado)
+      const updatedCharacter = this.enrichCharacterData(characterBase);
+
+      // 3. Actualizamos la lista VISIBLE (lo que ves ahora)
+      const displayIndex = this.displayedCharacters.findIndex(c => c.id === id);
+      if (displayIndex !== -1) {
+        this.displayedCharacters[displayIndex] = updatedCharacter;
+      }
+
+      // 4. Actualizamos la lista INICIAL (los primeros 100)
+      const initialIndex = this.allCharacters.findIndex(c => c.id === id);
+      if (initialIndex !== -1) {
+        this.allCharacters[initialIndex] = updatedCharacter;
+      }
+
+      // 5. Actualizamos la lista MAESTRA (los 800+, para que al filtrar no se pierda)
+      const fullIndex = this.allCharactersFull.findIndex(c => c.id === id);
+      if (fullIndex !== -1) {
+        this.allCharactersFull[fullIndex] = updatedCharacter;
+      }
+
       this.cdRef.detectChanges();
     }
   }

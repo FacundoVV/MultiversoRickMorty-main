@@ -727,3 +727,31 @@
     justify-content: center;
   }
 }
+
+/* Contenedor circular fijo */
+.avatar-container {
+  width: 50px !important;
+  height: 50px !important;
+  border-radius: 50% !important;
+  overflow: hidden !important;
+  border: 2px solid #00f7ff !important; /* El color cian de tu diseño */
+  margin: 0 auto !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  background-color: #0a0e17; /* Fondo oscuro mientras carga */
+}
+
+/* La imagen dentro del círculo */
+.character-image {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important; /* Mantiene la proporción sin deformar */
+  display: block !important;
+}
+
+/* Ajuste para que la celda de la tabla no se ensanche */
+.character-table td:first-child {
+  width: 70px !important;
+  padding: 10px !important;
+}

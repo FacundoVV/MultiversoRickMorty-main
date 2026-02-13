@@ -8,9 +8,9 @@ import { FavoritesListComponent } from './components/favorites-list/favorites-li
 
 export const routes: Routes = [
   { 
-    path: '', 
+    path: '', // Ruta raíz (página de inicio)
     component: CharacterTableComponent,
-    canActivate: [AuthGuard] 
+    canActivate: [AuthGuard] // Protegida: solo accesible para usuarios logueados
   },
   { 
     path: 'login', 
@@ -23,12 +23,12 @@ export const routes: Routes = [
   { 
     path: 'profile', 
     component: ProfileComponent,
-    canActivate: [AuthGuard] 
+    canActivate: [AuthGuard] // Protegida por el guardia de seguridad
   },
   { 
     path: 'favorites', 
     component: FavoritesListComponent,
-    canActivate: [AuthGuard]  // AÑADIR AuthGuard aquí también
+    canActivate: [AuthGuard] 
   },
-  { path: '**', redirectTo: '' }
+  { path: '**', redirectTo: '' } // Comodín: cualquier ruta desconocida redirige al inicio
 ];

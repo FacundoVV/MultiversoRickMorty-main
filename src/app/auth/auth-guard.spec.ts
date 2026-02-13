@@ -2,29 +2,32 @@ import { TestBed } from '@angular/core/testing';
 import { CanActivateFn, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { AuthGuard } from './auth-guard';
 import { AuthService } from './auth.service';
-import { RouterTestingModule } from '@angular/router/testing';
+import { provideRouter } from '@angular/router'; 
 import { Router } from '@angular/router';
 import { of } from 'rxjs';
 
 describe('authGuard', () => {
   let authService: AuthService;
   let router: Router;
+
+  //Usamos la instancia inyectada directamente
   const executeGuard: CanActivateFn = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) =>
     TestBed.runInInjectionContext(() => {
-      TestBed.inject(AuthGuard);
-      return new AuthGuard(authService, router).canActivate(route, state);
+      const guard = TestBed.inject(AuthGuard); // Inyectamos el guardia
+      return guard.canActivate(route, state);  // Llamamos al método
     });
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule],
       providers: [
         AuthGuard,
+        provideRouter([]), // Reemplaza a RouterTestingModule
         {
           provide: AuthService,
           useValue: {
-            isLoggedIn: () => of(true),
-            currentUser: { role: 'user' }
+            // Asegúrate de que estos nombres coincidan con tu AuthService
+            currentUser$: of(null), 
+            isLoggedIn: () => of(true)
           }
         }
       ]

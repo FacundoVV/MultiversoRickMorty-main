@@ -1,6 +1,4 @@
-<!-- FILTROS - AÑADE ESTO AL PRINCIPIO -->
 <div class="filters-container">
-  <!-- Contador de personajes -->
   <div class="characters-info">
     <div class="characters-count">
       <span *ngIf="!isLoading && allCharacters.length > 0">
@@ -27,7 +25,6 @@
     </button>
   </div>
 
-  <!-- Barra de búsqueda -->
   <div class="search-container">
     <input
       type="text"
@@ -41,9 +38,7 @@
     </button>
   </div>
 
-  <!-- Filtros -->
   <div class="filter-grid">
-    <!-- Filtro por Estado -->
     <div class="filter-group">
       <label for="statusFilter">Estado:</label>
       <select 
@@ -59,7 +54,6 @@
       </select>
     </div>
 
-    <!-- Filtro por Especie -->
     <div class="filter-group">
       <label for="speciesFilter">Especie:</label>
       <select 
@@ -75,7 +69,6 @@
       </select>
     </div>
 
-    <!-- Filtro por Ubicación -->
     <div class="filter-group">
       <label for="locationFilter">Ubicación:</label>
       <select 
@@ -91,7 +84,6 @@
       </select>
     </div>
 
-    <!-- Botón limpiar filtros -->
     <div class="filter-group">
       <button (click)="clearFilters()" class="clear-filters-btn">
         <i class="fas fa-times"></i> Limpiar filtros
@@ -99,12 +91,10 @@
     </div>
   </div>
 
-  <!-- Información de carga -->
   <div *ngIf="isLoadingAll()" class="loading-all">
     <i class="fas fa-spinner fa-spin"></i> Cargando todos los personajes...
   </div>
 
-  <!-- Información de estado -->
   <div class="view-info" *ngIf="!isLoading && allCharacters.length > 0">
     <p *ngIf="showingLimitedView && !hasActiveFilters()" class="limited-message">
       <i class="fas fa-info-circle"></i> Mostrando los primeros 100 personajes para mejor rendimiento.
@@ -116,19 +106,16 @@
   </div>
 </div>
 
-<!-- Estado de carga inicial -->
 <div *ngIf="isLoading" class="loading">
   <div class="spinner"></div>
   <p>Cargando personajes...</p>
 </div>
 
-<!-- Mensaje de error -->
 <div *ngIf="errorMessage" class="error-message">
   <p>{{ errorMessage }}</p>
   <button (click)="loadInitialCharacters()">Reintentar</button>
 </div>
 
-<!-- Tabla de personajes -->
 <div *ngIf="!isLoading && getDisplayedCount() > 0">
   <table class="character-table">
     <thead>
@@ -143,15 +130,17 @@
     </thead>
     <tbody>
       <tr *ngFor="let character of displayedCharacters">
-        <td>
-          <img 
-            [src]="character.image" 
-            [alt]="character.name"
-            (load)="handleImageLoad(character)"
-            (error)="handleImageError($event, character)"
-            [class.loaded]="character.imageLoaded"
-            class="character-image"
-          >
+        <td class="img-cell">
+          <div class="avatar-container">
+            <img 
+              [src]="character.image" 
+              [alt]="character.name"
+              (load)="handleImageLoad(character)"
+              (error)="handleImageError($event, character)"
+              [class.loaded]="character.imageLoaded"
+              class="character-image"
+            >
+          </div>
         </td>
         <td>{{ character.name }}</td>
         <td>{{ character.status }}</td>
@@ -191,7 +180,6 @@
   </table>
 </div>
 
-<!-- Estado sin resultados -->
 <div *ngIf="!isLoading && getDisplayedCount() === 0 && !errorMessage" class="no-results">
   <h3>¡No se encontraron personajes!</h3>
   <p *ngIf="hasActiveFilters()">

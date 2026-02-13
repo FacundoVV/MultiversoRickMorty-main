@@ -1,69 +1,98 @@
-// Servicio para manejar los personajes favoritos y sus notas
-// src/app/services/favorites.service.ts
-
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Character } from '../models/character.model';
+import { AuthService } from './auth.service'; // Importamos el servicio para detectar al usuario
 
-// Interfaz que extiende Character para incluir notas y fecha de agregado
+// Interfaz extendida: El personaje normal + datos propios de favoritos (notas, fecha)
 export interface FavoriteCharacter extends Character {
-  id: any;       // ID del personaje
-  species: any;  // Especie
-  status: any;   // Estado (vivo, muerto, desconocido)
-  name: any;     // Nombre
-  image: any;    // URL de la imagen
-  notes?: string;      // Notas agregadas por el usuario
-  addedDate?: Date;    // Fecha en la que se agregó a favoritos
+  id: any;
+  species: any;
+  status: any;
+  name: any;
+  image: any;
+  notes?: string;
+  addedDate?: Date;
 }
 
-@Injectable({ //define un servicio.
-  
-  providedIn: 'root' // Disponible en toda la aplicación
+@Injectable({
+  providedIn: 'root'
 })
 export class FavoritesService {
-  private readonly STORAGE_KEY = 'rickAndMortyFavorites'; // Clave para localStorage
-  private favoritesSubject: BehaviorSubject<FavoriteCharacter[]>; // Estado reactivo de favoritos
+  
+  // Estado Reactivo: BehaviorSubject mantiene la lista actual en memoria y avisa a los componentes si cambia
+  private favoritesSubject = new BehaviorSubject<FavoriteCharacter[]>([]);
+  
+  // INYECCIÓN MODERNA: Usamos 'inject' para acceder al AuthService y saber quién está logueado
+  private authService = inject(AuthService);
 
   constructor() {
-    const savedFavorites = this.getFromLocalStorage(); // Cargar favoritos guardados
-    this.favoritesSubject = new BehaviorSubject<FavoriteCharacter[]>(savedFavorites);
+    // --- LÓGICA DE SEGREGACIÓN DE DATOS ---
+    // Nos suscribimos al observable 'currentUser$' del AuthService.
+    // Esto se ejecuta automáticamente cada vez que alguien inicia o cierra sesión.
+    this.authService.currentUser$.subscribe(user => {
+      if (user) {
+        // Generamos una "llave" única usando el ID del usuario (ej: 'favorites_abc123')
+        const userKey = `favorites_${user.uid}`; 
+        // Buscamos en el localStorage SOLO la caja que corresponde a esa llave
+        const savedFavorites = this.getFromLocalStorage(userKey);
+        // Cargamos esos datos en la aplicación
+        this.favoritesSubject.next(savedFavorites);
+      } else {
+        // Si el usuario se va, enviamos un array vacío [] para limpiar la pantalla inmediatamente
+        // Esto evita que el siguiente usuario vea datos residuales
+        this.favoritesSubject.next([]);
+      }
+    });
   }
 
-  // Observable para suscribirse a cambios de favoritos
+  // Permite a los componentes "observar" la lista de favoritos sin poder modificarla directamente
   getFavorites(): Observable<FavoriteCharacter[]> {
     return this.favoritesSubject.asObservable();
   }
 
-  // Agregar un personaje a favoritos
+  // Agregar favorito (Protegido por usuario)
   addFavorite(character: Character, notes?: string): void {
+    // Verificamos quién es el usuario actual (síncrono)
+    const user = this.authService.currentUserValue;
+    if (!user) return; // Si no hay nadie logueado, no guardamos nada por seguridad
+
     const currentFavorites = this.favoritesSubject.value;
     
-    if (this.isFavorite(character.id)) {
-      return; // Si ya es favorito, no hacer nada
-    }
+    // Evitamos duplicados
+    if (this.isFavorite(character.id)) return;
 
     const newFavorite: FavoriteCharacter = {
       ...character,
       notes: notes || '',
-      addedDate: new Date() // Fecha de agregado
+      addedDate: new Date()
     };
 
     const updatedFavorites = [...currentFavorites, newFavorite];
-    this.saveToLocalStorage(updatedFavorites); // Guardar en localStorage
-    this.favoritesSubject.next(updatedFavorites); // Actualizar estado
-  }
-
-  // Quitar un personaje de favoritos
-  removeFavorite(id: number): void {
-    const updatedFavorites = this.favoritesSubject.value.filter(
-      favorite => favorite.id !== id
-    );
-    this.saveToLocalStorage(updatedFavorites);
+    
+    // Guardamos usando la ID (uid) del usuario actual para no mezclar datos
+    this.saveToLocalStorage(updatedFavorites, user.uid);
     this.favoritesSubject.next(updatedFavorites);
   }
 
-  // Actualizar las notas de un personaje favorito
+  // Eliminar favorito
+  removeFavorite(id: number): void {
+    const user = this.authService.currentUserValue;
+    if (!user) return;
+
+    const updatedFavorites = this.favoritesSubject.value.filter(
+      favorite => favorite.id !== id
+    );
+    
+    // Guardamos la lista actualizada en la caja del usuario actual
+    this.saveToLocalStorage(updatedFavorites, user.uid);
+    this.favoritesSubject.next(updatedFavorites);
+  }
+
+  // Editar notas personales
   updateFavoriteNotes(id: number, notes: string): void {
+    const user = this.authService.currentUserValue;
+    if (!user) return;
+
     const updatedFavorites = this.favoritesSubject.value.map(favorite => {
       if (favorite.id === id) {
         return { ...favorite, notes };
@@ -71,33 +100,35 @@ export class FavoritesService {
       return favorite;
     });
 
-    this.saveToLocalStorage(updatedFavorites);
+    this.saveToLocalStorage(updatedFavorites, user.uid);
     this.favoritesSubject.next(updatedFavorites);
   }
 
-  // Verifica si un personaje ya está en favoritos
+  // Utilidad: Verifica si un ID ya está en la lista actual
   isFavorite(id: number): boolean {
     return this.favoritesSubject.value.some(favorite => favorite.id === id);
   }
 
-  // Obtener un personaje favorito por su ID
+  // Utilidad: Devuelve el objeto completo del favorito
   getFavorite(id: number): FavoriteCharacter | undefined {
     return this.favoritesSubject.value.find(favorite => favorite.id === id);
   }
 
-  // Guardar el arreglo de favoritos en localStorage
-  private saveToLocalStorage(favorites: FavoriteCharacter[]): void {
+  // --- PERSISTENCIA PRIVADA ---
+  // Guarda en el navegador pero usando una CLAVE ÚNICA por usuario
+  private saveToLocalStorage(favorites: FavoriteCharacter[], uid: string): void {
     try {
-      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(favorites));
+      const key = `favorites_${uid}`; // La clave depende del usuario (ej: favorites_user1)
+      localStorage.setItem(key, JSON.stringify(favorites));
     } catch (error) {
       console.error('Error saving favorites to localStorage', error);
     }
   }
 
-  // Obtener favoritos desde localStorage
-  private getFromLocalStorage(): FavoriteCharacter[] {
+  // Lee del navegador usando la clave específica que le pasemos
+  private getFromLocalStorage(key: string): FavoriteCharacter[] {
     try {
-      const favoritesJson = localStorage.getItem(this.STORAGE_KEY);
+      const favoritesJson = localStorage.getItem(key);
       return favoritesJson ? JSON.parse(favoritesJson) : [];
     } catch (error) {
       console.error('Error reading favorites from localStorage', error);

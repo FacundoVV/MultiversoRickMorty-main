@@ -1,22 +1,25 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { Profile } from './profile';
+import { ProfileComponent } from './profile.component'; 
 
-describe('Profile', () => {
-  let component: Profile;
-  let fixture: ComponentFixture<Profile>;
+describe('ProfileComponent', () => {
+  let component: ProfileComponent;
+  let fixture: ComponentFixture<ProfileComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Profile]
+      // Al ser un componente Standalone, lo incluimos en 'imports'
+      imports: [ProfileComponent] 
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(Profile);
+    // Creamos la instancia del componente para la prueba
+    fixture = TestBed.createComponent(ProfileComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
+    fixture.detectChanges(); // Forzamos la detección de cambios inicial
   });
 
+  // Prueba básica: Verifica que el componente se cree correctamente en memoria
   it('should create', () => {
     expect(component).toBeTruthy();
   });
