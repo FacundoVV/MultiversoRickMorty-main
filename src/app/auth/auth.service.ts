@@ -34,7 +34,6 @@ export class AuthService {
     this.currentUser$ = this.currentUserSubject.asObservable();
 
     /**
-     * ESCUCHA ACTIVA (onAuthStateChanged):
      * Este es el corazón del servicio. Firebase nos avisa automáticamente
      * si el usuario está logueado o si cerró sesión, incluso si refresca la página.
      */
